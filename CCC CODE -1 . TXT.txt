@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 100
+#define FILE_NAME "atm_history.txt"
+
+int stack[MAX];
+int top = -1;
+int balance = 1000;
+
+void saveHistory(const char *action, int amount) {
+    FILE *fp = fopen(FILE_NAME, "a");
+    if(fp) {
+        fprintf(fp, "%s: %d | Balance: %d\n", action, amount, balance);
+        fclose(fp);
+    }
+}
+
+void deposit() {
+    int amt;
+    printf("Enter amount to deposit: ");
+    scanf("%d", &amt);
+    stack[++top] = amt;
+    balance += amt;
+    saveHistory("Deposit", amt);
+    printf("Deposited Successfully!\n");
+}
+
+void withdraw() {
+    int amt;
+    printf("Enter amount to withdraw: ");
+    scanf("%d", &amt);
+
+    if(amt > balance) {
+        printf("Insufficient Balance!\n");
+        return;
+    }
+
+    stack[++top] = -amt;
+    balance -= amt;
+    saveHistory("Withdraw", amt);
+    printf("Withdrawal Successful!\n");
+}
+
+void showHistory() {
+    FILE *fp = fopen(FILE_NAME, "r");
+    if (!fp) {
+        printf("No History Yet.\n");
+        return;
+    }
+    printf("\n--- Transaction History ---\n");
+    char line[100];
+    while(fgets(line, sizeof(line), fp))
+        printf("%s", line);
+    fclose(fp);
+}
+
+int main() {
+    int choice;
+    printf("ATM Transaction Simulation\n");
+
+    while(1) {
+        printf("\n1) Deposit\n2) Withdraw\n3) Show History\n4) Show Balance\n0) Exit\nChoose: ");
+        scanf("%d", &choice);
+
+        if(choice == 1) deposit();
+        else if(choice == 2) withdraw();
+        else if(choice == 3) showHistory();
+        else if(choice == 4) printf("Current Balance: %d\n", balance);
+        else if(choice == 0) break;
+        else printf("Invalid Option.\n");
+    }
+    return 0;
+}
+
+OUTPUT :
+ATM Transaction Simulation
+
+1) Deposit
+2) Withdraw
+3) Show History
+4) Show Balance
+0) Exit
+Choose: 1
+Enter amount to deposit: 500
+Deposited Successfully!
+
+1) Deposit
+2) Withdraw
+3) Show History
+4) Show Balance
+0) Exit
+Choose: 4
+Current Balance: 1500
+
+1) Deposit
+2) Withdraw
+3) Show History
+4) Show Balance
+0) Exit
+Choose: 2
+Enter amount to withdraw: 300
+Withdrawal Successful!
+
+1) Deposit
+2) Withdraw
+3) Show History
+4) Show Balance
+0) Exit
+Choose: 3
+
+--- Transaction History ---
+Deposit: 500 | Balance: 1500
+Withdraw: 300 | Balance: 1200
+
+1) Deposit
+2) Withdraw
+3) Show History
+4) Show Balance
+0) Exit
+Choose: 0
